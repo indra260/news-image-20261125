@@ -9,10 +9,10 @@ variable is set, for local runs).
 Only the Python standard library is used, because that is all the
 grading container provides.  The page is therefore drawn with a
 small rasteriser written for the job: a flat RGB pixel buffer, a
-PNG writer built on zlib, and bitmap letterforms carried in
-fontdata.py (see tools/make_font.py).  Nothing is read from the
-clock, the network or any random source, so two runs of this
-program produce exactly the same bytes.
+PNG writer built on zlib, and bitmap letterforms carried in the
+binary asset fontdata.bin (built by tools/make_font.py).  Nothing
+is read from the clock, the network or any random source, so two
+runs of this program produce exactly the same bytes.
 
 Every story below is data, compiled from the reporting of
 Wednesday 25 November 2026; the sources are listed in README.md
@@ -23,7 +23,18 @@ import os
 import struct
 import zlib
 
-import fontdata
+
+def load_font_blob():
+    """Read the packed typefaces from the fontdata.bin asset.
+
+    The blob sits next to this script; it is data, not code -- the
+    letterforms were rasterised once by tools/make_font.py and are
+    shipped as a binary asset so this program needs nothing beyond
+    the standard library at run time.
+    """
+    here = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(here, "fontdata.bin"), "rb") as fh:
+        return fh.read()
 
 PAGE = 1024            # the canvas is square: PAGE x PAGE pixels
 MARGIN = 40
@@ -39,7 +50,7 @@ HAIRLINE = (190, 182, 164)
 # ------------------------------------------------------------ type
 
 def unpack_fonts(blob):
-    """Parse the blob fontdata.py carries into a dict of typefaces."""
+    """Parse the blob fontdata.bin carries into a dict of typefaces."""
     faces = {}
     pos = 0
 
@@ -64,7 +75,7 @@ def unpack_fonts(blob):
     return faces
 
 
-FACES = unpack_fonts(fontdata.FONT_BLOB)
+FACES = unpack_fonts(load_font_blob())
 
 
 def measure(text, face, tracking=0):
