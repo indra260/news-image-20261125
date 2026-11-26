@@ -222,7 +222,7 @@ STATS = [
 COLUMNS_A = [
     (
         "EUROPE — UKRAINE",
-        "30 NATIONS TELL RUSSIA: STOP CHEMICAL ARMS",
+        "30+ NATIONS TELL RUSSIA: STOP CHEMICAL ARMS",
         "More than 30 countries demanded Russia stop using toxic "
         "chemicals and riot agents in Ukraine, as Kyiv struck Russian "
         "energy sites and peace talks gathered pace.",
@@ -256,7 +256,8 @@ COLUMNS_B = [
         "HUANG BACK AT NVIDIA; HUAWEI CONVICTED",
         "Nvidia's board reinstated Jensen Huang as chief after President "
         "Trump's intervention; a US court convicted China's Huawei over "
-        "its Iran business. AI shares slid.",
+        "its Iran business. AI shares slid: the S&P 500 fell 2.2%, the "
+        "Nasdaq 3.2%.",
     ),
     (
         "PACIFIC — HONIARA",
@@ -268,8 +269,12 @@ COLUMNS_B = [
 ]
 
 BRIEFS = [
+    ("TRADE", "US proposes new tariffs on 14 partners, at headline rates "
+              "of 20-40%; nothing in force before a 25 January hearing."),
     ("SPAIN", "Far-right parties lead polls before Sunday's snap election."),
     ("WASHINGTON", "CIA and ODNI suffer a cyber breach of unclassified systems."),
+    ("GAZA", "Health officials warn meningitis is spreading as Israel "
+             "continues to violate the ceasefire deal."),
     ("TENNIS", "World No. 2 Jannik Sinner faces a long lay-off after knee surgery."),
     ("CAMBODIA", "China and Cambodia open their biggest Golden Dragon drills yet."),
     ("DHAKA", "Ousted premier Sheikh Hasina vows a 16 December homecoming."),
@@ -285,14 +290,14 @@ def story_block(sheet, x, y, w, item):
     kicker, head, body = item
     sheet.text(x, y, kicker, "kick", CRIMSON, tracking=1)
     y += 19
-    y = sheet.paragraph(x, y, w, head, "headsm", 25, BLACK)
+    y = sheet.paragraph(x, y, w, head, "headsm", 24, BLACK)
     y += 2
-    return sheet.paragraph(x, y, w, body, "body", 20, BLACK)
+    return sheet.paragraph(x, y, w, body, "body", 19, BLACK)
 
 
 def numbers_panel(sheet, x, y, w):
     """The day in numbers: a ruled box of big figures and captions."""
-    height = 176
+    height = 160
     sheet.frame(x, y, w, height, BLACK, thick=2)
     sheet.centred(x + w // 2, y + 10, "THE DAY IN NUMBERS", "kick",
                   BLACK, tracking=3)
@@ -300,7 +305,7 @@ def numbers_panel(sheet, x, y, w):
     cell_w = (w - 24) // 2
     for i, (figure, caption) in enumerate(STATS):
         cx = x + 12 + (i % 2) * cell_w
-        cy = y + 38 + (i // 2) * 66
+        cy = y + 38 + (i // 2) * 58
         sheet.centred(cx + cell_w // 2, cy, figure, "bignum", CRIMSON)
         sheet.paragraph(cx + 6, cy + 34, cell_w - 12, caption,
                         "small", 14, BLACK, align="centre")
@@ -311,19 +316,19 @@ def compose():
     sheet = Sheet()
     sheet.rect(0, 0, PAGE, PAGE, CREAM)
 
-    y = 18
+    y = 16
     sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
     y += 7
     sheet.centred(PAGE // 2, y, "ONE PAGE — ALL THE NEWS THAT MATTERED",
                   "kick", BLACK, tracking=4)
-    y += line_px("kick") + 3
+    y += line_px("kick") + 2
     sheet.rect(MARGIN, y, WIDTH, 4, BLACK)
     y += 3
     sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
     y += 8
 
     sheet.centred(PAGE // 2, y, "THE WORLD TODAY", "masthead", BLACK)
-    y += line_px("masthead") - 13
+    y += line_px("masthead") - 16
     sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
     y += 6
 
@@ -335,22 +340,22 @@ def compose():
     tag = "THE DAY IN ONE IMAGE"
     sheet.text(MARGIN + WIDTH - 16 - measure(tag, "dateline"), ty,
                tag, "dateline", CREAM)
-    y += band + 11
+    y += band + 9
 
     # The lead: kicker and headline across the page, then the lead
     # text beside the numbers panel.
     sheet.text(MARGIN, y, LEAD_KICKER, "kick", CRIMSON, tracking=2)
-    y += 20
-    y = sheet.paragraph(MARGIN, y, WIDTH, LEAD_HEAD, "leadhead", 50, BLACK)
-    y += 7
+    y += 19
+    y = sheet.paragraph(MARGIN, y, WIDTH, LEAD_HEAD, "leadhead", 48, BLACK)
+    y += 5
     panel_w = 336
     panel_x = PAGE - MARGIN - panel_w
     lead_bottom = sheet.paragraph(MARGIN, y, panel_x - MARGIN - 26,
                                   LEAD_BODY, "body", 21, BLACK)
     panel_bottom = numbers_panel(sheet, panel_x, y, panel_w)
-    y = max(lead_bottom, panel_bottom) + 10
+    y = max(lead_bottom, panel_bottom) + 7
     sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
-    y += 10
+    y += 9
 
     # Two rows of three columns.
     col_w = (WIDTH - 48) // 3
@@ -361,9 +366,9 @@ def compose():
         bottom = max(ends)
         for x in col_x[1:]:
             sheet.rect(x - 12, y, 1, bottom - y, HAIRLINE)
-        y = bottom + 9
+        y = bottom + 6
         sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
-        y += 10
+        y += 7
 
     # Briefs, set as one flowing measure with bold place names.
     for place, text in BRIEFS:
@@ -376,7 +381,6 @@ def compose():
         for line in lines[1:]:
             sheet.text(MARGIN, y, line, "brief", BLACK)
             y += 18
-        y += 1
 
     y += 1
     sheet.rect(MARGIN, y, WIDTH, 1, BLACK)
